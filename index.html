@@ -151,6 +151,20 @@
         <option>その他</option>
       </select>
 
+      <label for="role">
+  あなたのお立場を教えてください<br>
+  <span style="font-weight:normal;">Please tell us your role</span>
+</label>
+<select id="role" required>
+  <option value="">選択してください / Please select</option>
+  <option>生徒</option>
+  <option>保護者</option>
+  <option>教職員</option>
+  <option>卒業生</option>
+  <option>地域の方</option>
+  <option>その他</option>
+</select>
+      
       <label for="area">
         お住まいの地域<br>
         <span style="font-weight:normal;">Area where you live</span>
@@ -189,7 +203,8 @@ form.addEventListener("submit", function(e) {
     satisfaction: document.getElementById("satisfaction").value,
     comment: document.getElementById("comment").value,
     source: document.getElementById("source").value,
-    area: document.getElementById("area").value
+    area: document.getElementById("area").value,
+    role: document.getElementById("role").value
   };
 
   fetch("https://script.google.com/macros/s/AKfycbxJpR-7-Vci-xGWyOR7keJLMpPcsxDQOojiE9lR9qOQVzOiME229ItFy9nTL27k-Gkz/exec", {
