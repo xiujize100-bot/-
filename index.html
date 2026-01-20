@@ -6,90 +6,127 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
-    body {
-      margin: 0;
-      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-      background: #0e0e0e;
-      color: #f5f5f5;
-    }
-    .hero {
-      height: 100vh;
-      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-        url('https://images.unsplash.com/photo-1519681393784-d120267933ba');
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 20px;
-    }
-    .hero h1 {
-      font-size: 42px;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-    }
-    .hero p {
-      font-size: 18px;
-      opacity: 0.9;
-    }
-    section {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 80px 20px;
-    }
-    h2 {
-      font-size: 28px;
-      border-bottom: 2px solid #fff;
-      display: inline-block;
-      margin-bottom: 30px;
-    }
-    .about p {
-      line-height: 1.9;
-      font-size: 17px;
-    }
-    label {
-      display: block;
-      margin-top: 25px;
-      font-weight: bold;
-    }
-    select, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 8px;
-      background: #1c1c1c;
-      border: 1px solid #444;
-      color: #fff;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-    button {
-      margin-top: 30px;
-      padding: 14px;
-      width: 100%;
-      font-size: 18px;
-      background: #ffffff;
-      color: #000;
-      border: none;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #ccc;
-    }
-    .complete {
-      display: none;
-      text-align: center;
-      font-size: 20px;
-    }
-    footer {
-      text-align: center;
-      padding: 40px 20px;
-      font-size: 14px;
-      opacity: 0.7;
-    }
-  </style>
+body {
+  margin: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  background: #0e0e0e;
+  color: #f5f5f5;
+}
+
+.hero {
+  height: 100vh;
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+    url('https://images.unsplash.com/photo-1519681393784-d120267933ba');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.hero h1 {
+  font-size: 42px;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 20px;
+}
+
+h2 {
+  font-size: 28px;
+  border-bottom: 2px solid #fff;
+  display: inline-block;
+  margin-bottom: 30px;
+}
+
+.about p {
+  line-height: 1.9;
+  font-size: 17px;
+}
+
+label {
+  display: block;
+  margin-top: 25px;
+  font-weight: bold;
+}
+
+select, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  background: #1c1c1c;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+button {
+  margin-top: 30px;
+  padding: 14px;
+  width: 100%;
+  font-size: 18px;
+  background: #ffffff;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #ccc;
+}
+
+.complete {
+  display: none;
+  text-align: center;
+  font-size: 20px;
+}
+
+footer {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* ▼ ここから送信中アニメーション ▼ */
+.loading {
+  display: none;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #ccc;
+  border-top: 3px solid #000;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 1s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+</style>
+
 </head>
 <body>
 
@@ -178,8 +215,11 @@
         <option>福岡県外</option>
       </select>
 
-      <button type="submit">回答を送信 / SEND</button>
-    </form>
+    <button type="submit">回答を送信 / SEND</button>
+
+<div class="loading" id="loading">
+  <span class="spinner"></span> 送信中です…
+</div>
 
     <div class="complete" id="completeMessage">
       <p>ご回答ありがとうございました。</p>
@@ -195,11 +235,14 @@
 <script>
 const form = document.getElementById("surveyForm");
 const complete = document.getElementById("completeMessage");
+const loading = document.getElementById("loading");
 
 form.addEventListener("submit", function(e) {
   e.preventDefault();
 
-  form.querySelector("button").disabled = true;
+  const button = form.querySelector("button");
+  button.disabled = true;
+  loading.style.display = "block"; // ★追加
 
   const data = {
     age: document.getElementById("age").value,
@@ -210,8 +253,6 @@ form.addEventListener("submit", function(e) {
     role: document.getElementById("role").value
   };
 
-  console.log("送信データ", data);
-
   fetch("https://script.google.com/macros/s/AKfycbyrbazpfo2jzMlBEKsDo4URiXe-mDs1UST-WBQBTyEfZJPLSOGNRWiadwNuiFXPKcLg/exec", {
     method: "POST",
     mode: "no-cors",
@@ -221,13 +262,15 @@ form.addEventListener("submit", function(e) {
     body: JSON.stringify(data)
   })
   .then(() => {
+    loading.style.display = "none";   // ★追加
     form.style.display = "none";
     complete.style.display = "block";
   })
   .catch(err => {
+    loading.style.display = "none";   // ★追加
     alert("送信に失敗しました");
     console.error(err);
-    form.querySelector("button").disabled = false;
+    button.disabled = false;
   });
 });
 </script>
