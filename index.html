@@ -256,32 +256,29 @@ form.addEventListener("submit", function(e) {
     role: document.getElementById("role").value
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbz1jfpK1_ryITjTeS3V-EllEzMrI-yxQCr3JmKJi8feUXv95yZTVFA8P0jyNcDu3aA/exec", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })
-  .then(res => res.text())   // ★重要
-  .then(text => {
-    if (text !== "ok") {
-      throw new Error("GAS returned: " + text);
-    }
+fetch("https://script.google.com/macros/s/AKfycbz1jfpK1_ryITjTeS3V-EllEzMrI-yxQCr3JmKJi8feUXv95yZTVFA8P0jyNcDu3aA/exec", {
+  method: "POST",
+  mode: "no-cors",   // ★これが最重要
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(data)
+})
+.then(() => {
+  loading.style.display = "none";
+  form.style.display = "none";
+  complete.style.display = "block";
 
-    loading.style.display = "none";
-    form.style.display = "none";
-    complete.style.display = "block";
-
-    complete.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-  })
-  .catch(err => {
-    loading.style.display = "none";
-    alert("送信に失敗しました。インターネットが不安定または接続されていない可能性があります");
-    console.error(err);
-    form.querySelector("button").disabled = false;
+  complete.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
   });
+})
+.catch(() => {
+  loading.style.display = "none";
+  alert("送信に失敗しました");
+  form.querySelector("button").disabled = false;
+});
 });
 </script>
 
